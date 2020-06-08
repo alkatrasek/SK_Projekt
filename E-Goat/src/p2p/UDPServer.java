@@ -28,13 +28,13 @@ public class UDPServer {
 
             if (message.equals("Lista"))
             {
-            	
+            	//Wczytywanie listy plików
             	byteResponse = "OK".getBytes("utf8");
             }
             
             else
             {
-            	
+            	//Sporządzenie listy klientów posiadających dany plik i wysłanie jej
             	byteResponse = "Lista użytkowników posiadających plik".getBytes("utf8");
             }
             

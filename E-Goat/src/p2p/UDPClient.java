@@ -6,8 +6,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 import java.security.DigestInputStream;
 import java.security.MessageDigest; 
@@ -17,13 +15,11 @@ public class UDPClient {
 		  
 	   private static String checksum(String filepath, MessageDigest md) throws IOException {
 
-        // file hashing with DigestInputStream
         try (DigestInputStream dis = new DigestInputStream(new FileInputStream(filepath), md)) {
-            while (dis.read() != -1) ; //empty loop to clear the data
+            while (dis.read() != -1) ;
             md = dis.getMessageDigest();
         }
 
-        // bytes to hex
         StringBuilder result = new StringBuilder();
         for (byte b : md.digest()) {
             result.append(String.format("%02x", b));
@@ -40,7 +36,7 @@ public class UDPClient {
     	File[] files=dir.listFiles();
     	String[][] sumy = new String[files.length][2];
     	int i=0;
-    	for (File file : dir.listFiles()) {
+    	for (File file : dir.listFiles()) {//Wczytywanie nazw plików i sum kontrolnych do tablicy
     		MessageDigest md = MessageDigest.getInstance("SHA-512");
             sumy[i][1] = checksum(file.getPath(), md);
             sumy[i][0] = file.getName();
