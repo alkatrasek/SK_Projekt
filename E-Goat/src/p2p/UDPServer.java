@@ -50,7 +50,7 @@ public class UDPServer {
                 	}
                 	if (p==0)
                 	{
-                		pliki.add(new Plik(L[0], L[1], address.toString()+" "+port));
+                		pliki.add(new Plik(L[0], L[1], address.toString()+"\t"+port));
                 	}
                 }
                 byteResponse = "OK".getBytes("utf8");
@@ -63,12 +63,12 @@ public class UDPServer {
             	{
             		if (message.equals(plik.getSuma())) a=plik.getAdresy();
             	}
-            	String odpowiedz = new String();
+            	String odpowiedz = new String("Lista adresów i portów klientów, którzy posiadaja ten plik:\n");
             	for (String s : a)
             	{
             		odpowiedz=odpowiedz+s+"\n";
             	}
-            	if (odpowiedz.isEmpty()) odpowiedz="Nie ma takiego pliku";
+            	if (a.isEmpty()) odpowiedz="Nie ma takiego pliku";
             	byteResponse = odpowiedz.getBytes("utf8");
             }
             
