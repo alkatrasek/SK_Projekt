@@ -10,8 +10,6 @@ public class UDPServer {
         //Otwarcie gniazda z okreslonym portem
         DatagramSocket datagramSocket = new DatagramSocket(Config.PORT);
 
-        byte[] byteResponse = "OK".getBytes("utf8");
-
         while (true){
 
             DatagramPacket receivedPacket
@@ -20,17 +18,26 @@ public class UDPServer {
             datagramSocket.receive(receivedPacket);
 
             int length = receivedPacket.getLength();
-            String message =
-                    new String(receivedPacket.getData(), 0, length, "utf8");
+            String message = new String(receivedPacket.getData(), 0, length, "utf8");
 
             // Port i host który wysłał nam zapytanie
             InetAddress address = receivedPacket.getAddress();
             int port = receivedPacket.getPort();
+            
+            byte[] byteResponse = "".getBytes("utf8");
 
-            System.out.println(message);
-            Thread.sleep(1000); //To oczekiwanie nie jest potrzebne dla
-            // obsługi gniazda
-
+            if (message.equals("Lista"))
+            {
+            	
+            	byteResponse = "OK".getBytes("utf8");
+            }
+            
+            else
+            {
+            	
+            	byteResponse = "Lista użytkowników posiadających plik".getBytes("utf8");
+            }
+            
             DatagramPacket response
                     = new DatagramPacket(
                         byteResponse, byteResponse.length, address, port);
