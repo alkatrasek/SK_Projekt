@@ -56,16 +56,28 @@ public class UDPClient {
         sentPacket.setPort(Config.PORT);
         socket.send(sentPacket);
 
+        String odpowiedz = new String();
+    	for (int j=0; j<sumy.length; j++)
+    	{
+    		odpowiedz=odpowiedz+sumy[j][0]+"\t"+sumy[j][1]+"\n";
+    	}
+    	
+    	stringContents = odpowiedz.getBytes("utf8");
+        sentPacket = new DatagramPacket(stringContents, stringContents.length);
+        sentPacket.setAddress(serverAddress);
+        sentPacket.setPort(Config.PORT);
+        socket.send(sentPacket);
+        
         DatagramPacket recievePacket = new DatagramPacket( new byte[Config.BUFFER_SIZE], Config.BUFFER_SIZE);
         socket.setSoTimeout(1010);
 
         try{
             socket.receive(recievePacket);
-            System.out.println("Serwer otrzymał wiadomość");
-            //int length = recievePacket.getLength();
-            //String message = new String(recievePacket.getData(), 0, length, "utf8");
+            System.out.println("Serwer potwierdza otrzymanie danych");
         }catch (SocketTimeoutException ste){
-            System.out.println("Serwer nie odpowiedział, więc albo dostał wiadomość albo nie...");
+            System.out.println("Serwer nie odpowiedział !!!");
         }
+        
+        
     }
 }

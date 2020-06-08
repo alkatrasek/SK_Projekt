@@ -2,8 +2,12 @@ package p2p;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UDPServer {
+	
+	static List<Plik> pliki = new ArrayList<Plik>();
 
     public static void main(String[] args) throws Exception{
 
@@ -28,14 +32,44 @@ public class UDPServer {
 
             if (message.equals("Lista"))
             {
-            	//Wczytywanie listy plików
-            	byteResponse = "OK".getBytes("utf8");
+            	datagramSocket.receive(receivedPacket);
+                length = receivedPacket.getLength();
+                message = new String(receivedPacket.getData(), 0, length, "utf8");
+                String[] linijki = message.split("\n");
+                for (String linijka : linijki)
+                {
+                	int p = 0;
+                	String[] L = linijka.split("\t");
+                	for (Plik plik : pliki)
+                	{
+                		if (L[1].equals(plik.getSuma()))
+                		{
+                			plik.dodajAdres(address.toString()+"\t"+port);
+                			p=1;
+                		}
+                	}
+                	if (p==0)
+                	{
+                		pliki.add(new Plik(L[0], L[1], address.toString()+" "+port));
+                	}
+                }
+                byteResponse = "OK".getBytes("utf8");
             }
             
             else
             {
-            	//Sporządzenie listy klientów posiadających dany plik i wysłanie jej
-            	byteResponse = "Lista użytkowników posiadających plik".getBytes("utf8");
+            	List<String> a = new ArrayList<String>();
+            	for (Plik plik : pliki)
+            	{
+            		if (message.equals(plik.getSuma())) a=plik.getAdresy();
+            	}
+            	String odpowiedz = new String();
+            	for (String s : a)
+            	{
+            		odpowiedz=odpowiedz+s+"\n";
+            	}
+            	if (odpowiedz.isEmpty()) odpowiedz="Nie ma takiego pliku";
+            	byteResponse = odpowiedz.getBytes("utf8");
             }
             
             DatagramPacket response
