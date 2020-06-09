@@ -2,12 +2,13 @@ package p2p;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class UDPServer {
 	
-	static List<Plik> pliki = new ArrayList<Plik>();
+	private static List<File> files = new ArrayList<>();
 
     public static void main(String[] args) throws Exception{
 
@@ -22,54 +23,54 @@ public class UDPServer {
             datagramSocket.receive(receivedPacket);
 
             int length = receivedPacket.getLength();
-            String message = new String(receivedPacket.getData(), 0, length, "utf8");
+            String message = new String(receivedPacket.getData(), 0, length, StandardCharsets.UTF_8);
 
             // Port i host który wysłał nam zapytanie
             InetAddress address = receivedPacket.getAddress();
             int port = receivedPacket.getPort();
             
-            byte[] byteResponse = "".getBytes("utf8");
+            byte[] byteResponse;
 
             if (message.equals("Lista"))
             {
             	datagramSocket.receive(receivedPacket);
                 length = receivedPacket.getLength();
-                message = new String(receivedPacket.getData(), 0, length, "utf8");
-                String[] linijki = message.split("\n");
-                for (String linijka : linijki)
+                message = new String(receivedPacket.getData(), 0, length, StandardCharsets.UTF_8);
+                String[] lines = message.split("\n");
+                for (String line : lines)
                 {
                 	int p = 0;
-                	String[] L = linijka.split("\t");
-                	for (Plik plik : pliki)
+                	String[] splitLines = line.split("\t");
+                	for (File file : files)
                 	{
-                		if (L[1].equals(plik.getSuma()))
+                		if (splitLines[1].equals(file.getSum()))
                 		{
-                			plik.dodajAdres(address.toString()+"\t"+port);
-                			p=1;
+							file.addAdress(address.toString() + "\t" + port);
+                			p = 1;
                 		}
                 	}
-                	if (p==0)
+                	if (p == 0)
                 	{
-                		pliki.add(new Plik(L[0], L[1], address.toString()+"\t"+port));
+                		files.add(new File(splitLines[1], address.toString() + "\t" + port));
                 	}
                 }
-                byteResponse = "OK".getBytes("utf8");
+                byteResponse = "OK".getBytes(StandardCharsets.UTF_8);
             }
             
             else
             {
-            	List<String> a = new ArrayList<String>();
-            	for (Plik plik : pliki)
+            	List<String> a = new ArrayList<>();
+            	for (File file : files)
             	{
-            		if (message.equals(plik.getSuma())) a=plik.getAdresy();
+            		if (message.equals(file.getSum())) a = file.getAddresses();
             	}
-            	String odpowiedz = new String("Lista adresów i portów klientów, którzy posiadaja ten plik:\n");
+            	StringBuilder responses = new StringBuilder("Lista adresów i portów klientów, którzy posiadaja ten plik:\n");
             	for (String s : a)
             	{
-            		odpowiedz=odpowiedz+s+"\n";
+					responses.append(s).append("\n");
             	}
-            	if (a.isEmpty()) odpowiedz="Nie ma takiego pliku";
-            	byteResponse = odpowiedz.getBytes("utf8");
+            	if (a.isEmpty()) responses = new StringBuilder("Nie ma takiego pliku");
+            	byteResponse = responses.toString().getBytes(StandardCharsets.UTF_8);
             }
             
             DatagramPacket response
