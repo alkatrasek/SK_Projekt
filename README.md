@@ -8,12 +8,12 @@ Uruchamiamy `UDPServer` oraz `UDPClient`.\
 Postępujemy zgodnie z instrukcjami w programie `UDPClient`, to znaczy:
 1. Podajemy ścieżkę do folderu którego zawartośc mamy zamiar udostępnić, powinien on zawierać same pliki.
 ```java
-    Scanner scan = new Scanner(System.in);
-    System.out.println("Podaj ściezke folderu, który chcesz udostępnić:");
-    String path = scan.nextLine();
-    System.out.println("Czekaj...");
-    File dir = new File(path);
-    String[][] sums = loadNamesAndChecksums(dir);
+Scanner scan = new Scanner(System.in);
+System.out.println("Podaj ściezke folderu, który chcesz udostępnić:");
+String path = scan.nextLine();
+System.out.println("Czekaj...");
+File dir = new File(path);
+String[][] sums = loadNamesAndChecksums(dir);
 ```
 
 2. Program wczytuje nazwy plików i oblicza ich sumy kontrolne, a następnie wysyła te wartości do serwera, który zapisuje je w liście obiektów stworzonej klasy `File` (plik `File` z deklaracją klasy, jej metodami i konstruktorami).
@@ -34,13 +34,13 @@ private static String [][] loadNamesAndChecksums(File dir) throws NoSuchAlgorith
 
 3. Następnie program `UDPClient` rząda od użytkownika sumy kontronej pliku, który chcielibyśmy pobrać, a po wczytaniu wysyła ją do serwera.
 ```java
-    System.out.println("Podaj sume kontrolna pliku, który chcialbys pobrac:");
-	String sum = scan.nextLine();
-	stringContents = sum.getBytes(StandardCharsets.UTF_8);
-	sentPacket = new DatagramPacket(stringContents, stringContents.length);
-	sentPacket.setAddress(serverAddress);
-	sentPacket.setPort(Config.PORT);
-	socket.send(sentPacket);
+System.out.println("Podaj sume kontrolna pliku, który chcialbys pobrac:");
+String sum = scan.nextLine();
+stringContents = sum.getBytes(StandardCharsets.UTF_8);
+sentPacket = new DatagramPacket(stringContents, stringContents.length);
+sentPacket.setAddress(serverAddress);
+sentPacket.setPort(Config.PORT);
+socket.send(sentPacket);
 ```
 
 4. `UPDServer` przeszukuje listę plików i gdy znajdzie taki o podanej sumie kontrolnej, to wysyła listę adresów wraz z portami klientów, którzy zadeklarowali, że posiadają taki plik.
@@ -85,12 +85,12 @@ datagramSocket.send(response);
 
 5. `UDPClient` wyświetla daną listę użytkownikowi i rząda przekopiowania lub przepisania adresu wraz z portem wybranych z podanej listy.
 ```java
-    System.out.println(message + "Wybierz jeden adres i przekopiuj go wraz z portem.");
+System.out.println(message + "Wybierz jeden adres i przekopiuj go wraz z portem.");
 ```
 
 6. Program wczytyje wybrany przez klienta adres z portem.
 ```java 
-    String clientAdress = scan.nextLine();
+String clientAdress = scan.nextLine();
 ```
 
 Na tym kończy się działanie programów.\
