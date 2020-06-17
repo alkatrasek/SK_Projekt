@@ -13,7 +13,7 @@ class File {
 		addresses.add(a);
 	}
 	
-	void addAdress(String a)
+	void addAddress(String a)
 	{
 		addresses.add(a);
 	}

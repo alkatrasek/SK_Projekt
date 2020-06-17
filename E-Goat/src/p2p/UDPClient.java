@@ -16,8 +16,7 @@ import java.security.NoSuchAlgorithmException;
 public class UDPClient {
 		  
 	   //Funkcja spawdzająca sumę kontrolną
-	   private static String checkSum(String filepath, MessageDigest md) throws IOException {
-
+    private static String checksum(String filepath, MessageDigest md) throws IOException {
         try (DigestInputStream dis = new DigestInputStream(new FileInputStream(filepath), md)) {
             while (dis.read() != -1);
             md = dis.getMessageDigest();
@@ -29,26 +28,28 @@ public class UDPClient {
         }
         return result.toString();
 
-	   }
-	   
+    }
+    private static String [][] loadNamesAndChecksums(File dir) throws NoSuchAlgorithmException, IOException {
+        String[][] sums = new String[Objects.requireNonNull(dir.listFiles()).length][2];
+        int i = 0;
+        //Wczytywanie nazw plików i sum kontrolnych do tablicy
+        for (File file : Objects.requireNonNull(dir.listFiles())) {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            sums[i][1] = checksum(file.getPath(), md);
+            sums[i][0] = file.getName();
+            i++;
+        }
+        return sums;
+    }
+
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
     	Scanner scan = new Scanner(System.in);
     	System.out.println("Podaj ściezke folderu, który chcesz udostępnić:");
     	String path = scan.nextLine();
     	System.out.println("Czekaj...");
     	File dir = new File(path);
-    	File[] files = dir.listFiles();
-        assert files != null;
-        String[][] sums = new String[files.length][2];
-    	int i=0;
-    	//Wczytywanie nazw plików i sum kontrolnych do tablicy
-    	for (File file : Objects.requireNonNull(dir.listFiles())) {
-    		MessageDigest md = MessageDigest.getInstance("SHA-512");
-            sums[i][1] = checkSum(file.getPath(), md);
-            sums[i][0] = file.getName();
-            i++;
-        }
-    	
+        String[][] sums = loadNamesAndChecksums(dir);
+
     	//Wysłanie komendy do serwera w celu podania mu listy plików
         String message = "Lista";
         InetAddress serverAddress = InetAddress.getByName("localhost");
@@ -85,8 +86,7 @@ public class UDPClient {
             System.out.println("Serwer nie odpowiedzial!");
         }
         
-        while(true)
-	        {
+        while(true) {
 	        //Wysyłanie do serwera sumy kontrolnej pliku
 	        System.out.println("Podaj sume kontrolna pliku, który chcialbys pobrac:");
 	    	String sum = scan.nextLine();
